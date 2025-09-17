@@ -25,16 +25,12 @@ Moneda: Todos los importes se muestran en solsitos S/.
 ## Arquitectura y diseño
 
 Patrón en capas con paquetes separados:
-- model/: Entidades de dominio simples (POJOs): Cliente, Producto, Pedido, ItemPedido, Mozo.
+- model/: Entidades de dominio simples: Cliente, Producto, Pedido, ItemPedido, Mozo.
 - dao/: Acceso a datos con JDBC hacia SQLite. Cada DAO encapsula el SQL de su entidad.
-- service/: Lógica de negocio y orquestación (p. ej., validaciones, reglas de unicidad, flujos de selección).
-- ui/: Interfaz de usuario. Se ofrece GUI (Swing) en AppFrame y aún conviven menús de consola (opcional/legacy).
-- BD/DatabaseConfig: Conexión y creación de tablas iniciales, con seeding básico si está vacío.
+- service/: Lógica de negocio (p. ej., validaciones, reglas de unicidad, flujos de selección).
+- ui/: Interfaz de usuario. Se ofrece GUI (Swing) en AppFrame.
+- BD/DatabaseConfig: Conexión y creación de tablas iniciales, con ejemplos básicos por defecto.
 
-Decisiones de diseño:
-- UI no accede a JDBC directo para entidades clave; usa services/DAOs. Se dejó mínimo SQL directo histórico, y se favorece continuar moviéndolo a Service/DAO.
-- Tablas con DefaultTableModel no editables; todos los cambios se hacen mediante acciones y diálogos.
-- Orden estable de pedidos por id ascendente para que al cambiar estado/fecha no se reordenen.
 
 ## Esquema de base de datos y bootstrapping
 
@@ -71,7 +67,7 @@ Cada cambio de estado actualiza la columna fecha, pero el orden de la tabla perm
   - Teléfono: opcional; si se informa, debe ser numérico de 9 dígitos; sin duplicados.
   - Al fallar la inserción (duplicados / validación), la UI muestra el motivo.
 - Mozos:
-  - Nombre y Turno se ingresan sin validación de alfabético (a pedido). Eliminación por selección.
+  - Nombre y Turno se ingresan sin validación de alfabético. Eliminación por selección.
 - Productos (Chef):
   - Nombre alfanumérico y categoría con letras/espacios.
   - Precio > 0.
@@ -80,7 +76,7 @@ Cada cambio de estado actualiza la columna fecha, pero el orden de la tabla perm
 
 - Pedidos y Productos se refrescan automáticamente cada ~3s en la vista abierta.
 - Esto permite que distintas instancias vean los cambios de estado o catálogo casi en tiempo real.
-- Pedidos ordenados por id ascendente para evitar “saltos” al actualizar hora.
+- Pedidos ordenados por id ascendente.
 
 ## Estructura del proyecto
 
@@ -89,12 +85,12 @@ Cada cambio de estado actualiza la columna fecha, pero el orden de la tabla perm
 - dao/*.java — DAOs: ClienteDAO, ProductoDAO, PedidoDAO, MozoDAO.
 - service/*.java — Servicios: ClienteService, ProductoService, PedidoService.
 - ui/AppFrame.java — Ventana principal (Swing) con pestañas por rol.
-- ui/Menu*.java — Menús de consola (legacy).
+- ui/Menu*.java — Menús de consola.
 - Cafeteria.java — Punto de entrada. Pide rol y lanza AppFrame.
 
 ## Cómo ejecutar
 
 1) Compilar y ejecutar con Java 21 y con el driver JDBC de SQLite en el classpath.
-2) Ejecutar `Cafeteria` (raíz). El sistema:
+2) Ejecutar `Cafeteria`. El sistema:
    - Inicializa la base de datos.
    - Seleccionar el rol (Mozo o Chef) y se abrirá la GUI.

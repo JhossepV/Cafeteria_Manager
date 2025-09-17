@@ -59,8 +59,6 @@ public class DatabaseConfig {
     };
 
     try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
-  // Migración: eliminar columna favorito si existe (SQLite requiere recrear tabla: se omite por simplicidad)
-  // Se puede ignorar si la tabla ya existe con esa columna; el código no la usa.
       for (String sql : createTables) {
         stmt.execute(sql);
       }
